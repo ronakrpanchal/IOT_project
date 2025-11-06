@@ -3,116 +3,72 @@
 #include <WiFiUdp.h>
 
 // --- ⬇️ ⬇️ EDIT THESE ⬇️ ⬇️ ---
-const char *WIFI_SSID = "Jimit Chavda";
-const char *WIFI_PASSWORD = "heilschindler";
-const char *SERVER_IP = "10.240.48.131"; // Your PC's IP
-const char *DEVICE_ID = "B";
-// --- ⬆️ ⬆️ EDIT THESE ⬆️ ⬇️ ---
+const char *WIFI_SSID = "Airtel_jimi_2244";
+const char *WIFI_PASSWORD = "air80447";
+const char *SERVER_IP = "192.168.1.7"; // Your Laptop's ETHERNET IP
+// --- ⬆️ ⬆️ EDIT THESE ⬆️ ⬆️ ---
 
 const int SERVER_PORT = 5683;
-const unsigned long RETRY_TIMEOUT = 2000; // 2 seconds
-const unsigned long SEND_DELAY = 500;     // 0.5 seconds
+const int LOCAL_PORT = 4211; // Listen on a different port
 
 WiFiUDP udp;
-int myValue = 0;
-bool waiting_for_ack = false;
-unsigned long last_sent_time = 0;
-String last_payload_sent = "";
+char packetBuffer[255];
 
-// Builds and sends the raw CoAP packet
-void sendCoapMessage(const char *payload)
+void sendRaw(const char *txt)
 {
-    char buffer[128];
-    int offset = 0;
-    buffer[offset++] = 0x40;
-    buffer[offset++] = 0x02;
-    buffer[offset++] = random(0, 255);
-    buffer[offset++] = random(0, 255);
-    buffer[offset++] = 0xFF; // Payload marker
-    strcpy(&buffer[offset], payload);
-    offset += strlen(payload);
-
     udp.beginPacket(SERVER_IP, SERVER_PORT);
-    udp.write((uint8_t *)buffer, offset);
+    udp.write((const uint8_t *)txt, strlen(txt));
     udp.endPacket();
+    Serial.printf("Sent to server: %s\n", txt);
 }
 
-void sendMyValue()
+void sendNumber(int num)
 {
-    last_payload_sent = String(DEVICE_ID) + ":" + String(myValue);
-    Serial.printf("➡️  Sending: '%s'\n", last_payload_sent.c_str());
-    sendCoapMessage(last_payload_sent.c_str());
-    waiting_for_ack = true;
-    last_sent_time = millis();
+    char msg[32];
+    int n = snprintf(msg, sizeof(msg), "%d", num);
+    udp.beginPacket(SERVER_IP, SERVER_PORT);
+    udp.write((uint8_t *)msg, n);
+    udp.endPacket();
+    Serial.printf("Sent number to server: %s\n", msg);
 }
 
 void setup()
 {
     Serial.begin(115200);
     delay(1000);
-    Serial.println("--- Starting Device B ---");
+
+    Serial.println("--- Starting Device B (PING-B) ---");
     WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
     while (WiFi.status() != WL_CONNECTED)
     {
-        delay(300);
+        delay(500);
         Serial.print(".");
     }
     Serial.println("\nWiFi connected! IP: " + WiFi.localIP().toString());
-    udp.begin(4210);
-    Serial.println("UDP listener started. Waiting for server...");
-    // This device WAITS for the server to send it a message.
+    udp.begin(LOCAL_PORT);
+    Serial.printf("UDP listener started on port %d\n", LOCAL_PORT);
+
+    // Send a registration message so server learns our IP:port immediately
+    delay(200);
+    sendRaw("REG-B");
 }
 
 void loop()
 {
-    // 1. Check for incoming packets
     int packetSize = udp.parsePacket();
     if (packetSize)
     {
-        char packetBuffer[255];
-        int len = udp.read(packetBuffer, 254);
+        int len = udp.read(packetBuffer, sizeof(packetBuffer) - 1);
         packetBuffer[len] = 0;
+        Serial.printf("Received from server: '%s'\n", packetBuffer);
 
-        char *payload = strstr(packetBuffer, "\xff");
-        if (payload)
-        {
-            payload++; // Move past the 0xFF marker
-            String payloadStr = String(payload);
+        // parse number, increment and send back to server
+        int received = atoi(packetBuffer);
+        int toSend = received + 1;
 
-            // Check if it's an ACK for our last sent value
-            String expected_ack = "ACK:" + String(myValue);
-            if (waiting_for_ack && payloadStr.equals(expected_ack))
-            {
-                Serial.printf("✅ Got ACK for %d\n", myValue);
-                waiting_for_ack = false;
-                last_payload_sent = ""; // Clear buffer
-
-                // Check if it's a new value from the server
-            }
-            else if (!payloadStr.startsWith("ACK:") && !payloadStr.startsWith(DEVICE_ID))
-            {
-                Serial.printf("⬇️  Got new value: '%s'\n", payloadStr.c_str());
-                int new_val = payloadStr.toInt();
-                myValue = new_val;
-
-                // Send ACK for this new value
-                String ackPayload = "ACK:" + String(myValue);
-                Serial.printf("⬅️  Sending ACK: '%s'\n", ackPayload.c_str());
-                sendCoapMessage(ackPayload.c_str());
-
-                // Wait 0.5s, then send the *next* value
-                delay(SEND_DELAY);
-                myValue++;
-                sendMyValue(); // This sends "B:(myValue)"
-            }
-        }
+        delay(100); // small pause
+        sendNumber(toSend);
     }
 
-    // 2. Check for retry
-    if (waiting_for_ack && (millis() - last_sent_time > RETRY_TIMEOUT))
-    {
-        Serial.printf("🔁 RETRY: Sending '%s' again...\n", last_payload_sent.c_str());
-        sendCoapMessage(last_payload_sent.c_str()); // Resend the last packet
-        last_sent_time = millis();                  // Reset the retry timer
-    }
+    delay(50);
 }
