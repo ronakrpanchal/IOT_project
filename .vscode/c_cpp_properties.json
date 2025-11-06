@@ -10,6 +10,7 @@
             "includePath": [
                 "/home/zoro/Roger/College/iot_project/IOT_project",
                 "/home/zoro/.platformio/packages/framework-arduinoespressif32/libraries/WiFi/src",
+                "/home/zoro/Roger/College/iot_project/IOT_project/.pio/libdeps/device_A/CoAP simple library",
                 "/home/zoro/.platformio/packages/framework-arduinoespressif32/tools/sdk/esp32/include/newlib/platform_include",
                 "/home/zoro/.platformio/packages/framework-arduinoespressif32/tools/sdk/esp32/include/freertos/include",
                 "/home/zoro/.platformio/packages/framework-arduinoespressif32/tools/sdk/esp32/include/freertos/include/esp_additions/freertos",
@@ -245,6 +246,7 @@
                 "path": [
                     "/home/zoro/Roger/College/iot_project/IOT_project",
                     "/home/zoro/.platformio/packages/framework-arduinoespressif32/libraries/WiFi/src",
+                    "/home/zoro/Roger/College/iot_project/IOT_project/.pio/libdeps/device_A/CoAP simple library",
                     "/home/zoro/.platformio/packages/framework-arduinoespressif32/tools/sdk/esp32/include/newlib/platform_include",
                     "/home/zoro/.platformio/packages/framework-arduinoespressif32/tools/sdk/esp32/include/freertos/include",
                     "/home/zoro/.platformio/packages/framework-arduinoespressif32/tools/sdk/esp32/include/freertos/include/esp_additions/freertos",
