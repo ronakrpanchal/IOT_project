@@ -9,6 +9,8 @@
             "name": "PlatformIO",
             "includePath": [
                 "/home/zoro/Roger/College/iot_project/IOT_project",
+                "/home/zoro/Roger/College/iot_project/IOT_project/lib/ProximitySensor",
+                "/home/zoro/Roger/College/iot_project/IOT_project/lib/DeviceLogic",
                 "/home/zoro/.platformio/packages/framework-arduinoespressif32/libraries/WiFi/src",
                 "/home/zoro/Roger/College/iot_project/IOT_project/.pio/libdeps/device_A/CoAP simple library",
                 "/home/zoro/.platformio/packages/framework-arduinoespressif32/tools/sdk/esp32/include/newlib/platform_include",
@@ -245,6 +247,8 @@
                 "limitSymbolsToIncludedHeaders": true,
                 "path": [
                     "/home/zoro/Roger/College/iot_project/IOT_project",
+                    "/home/zoro/Roger/College/iot_project/IOT_project/lib/ProximitySensor",
+                    "/home/zoro/Roger/College/iot_project/IOT_project/lib/DeviceLogic",
                     "/home/zoro/.platformio/packages/framework-arduinoespressif32/libraries/WiFi/src",
                     "/home/zoro/Roger/College/iot_project/IOT_project/.pio/libdeps/device_A/CoAP simple library",
                     "/home/zoro/.platformio/packages/framework-arduinoespressif32/tools/sdk/esp32/include/newlib/platform_include",
@@ -481,6 +485,9 @@
             "defines": [
                 "PLATFORMIO=60118",
                 "ARDUINO_ESP32_DEV",
+                "WIFI_SSID=\"Airtel_jimi_2244\"",
+                "WIFI_PASS=\"air80447\"",
+                "SERVER_IP=\"192.168.1.7\"",
                 "HAVE_CONFIG_H",
                 "MBEDTLS_CONFIG_FILE=\"mbedtls/esp_config.h\"",
                 "UNITY_INCLUDE_CONFIG_H",
