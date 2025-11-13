@@ -1,7 +1,0 @@
-[wokwi]
-version = 1
-firmware = "build/Project.ino.elf"
-elf = "build/Project.ino.elf"
-
-[[net.forward]]
-from = "target:5684"
