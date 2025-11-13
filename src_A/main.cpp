@@ -72,25 +72,25 @@ void setup()
     Serial.println("CoAP listener started. System armed.");
 }
 
-// --- 5. LOOP ---
+// --- 5. LOOP (Updated for Continuous Alerts) ---
 void loop()
 {
     coap.loop();
 
     unsigned long currentTime = millis();
 
-    // Check Audio Sensor
+    // Check Audio Sensor (This one still has a cooldown)
     if (soundSensor.isSoundDetected())
     {
         if (currentTime - lastSoundAlertTime > ALERT_COOLDOWN_MS)
         {
-            Serial.println("!!! SOUND ALERTE !! Envoi du signal.");
+            Serial.println("!!! SOUND ALERT !!");
             coap.put(serverIp, SERVER_PORT, "alert", "SOUND_DETECTED");
             lastSoundAlertTime = currentTime;
         }
     }
 
-    // Check Proximity Sensor
+    // Check Proximity Sensor (Runs every 250ms)
     if (currentTime - lastProxCheck > PROX_CHECK_INTERVAL)
     {
         lastProxCheck = currentTime;
@@ -100,16 +100,14 @@ void loop()
 
         if (distance > 0 && distance < ALERT_THRESHOLD_CM)
         {
-            // --- NEW BUZZER LOGIC ---
+            // --- LOGIC CHANGED ---
             Serial.println("!!! PROXIMITY ALERTE !!");
             tone(BUZZER_PIN, 1000); // Play a 1000Hz tone
 
-            if (currentTime - lastProxAlertTime > ALERT_COOLDOWN_MS)
-            {
-                String payload = "PROXIMITY_DETECTED: " + String(distance) + " cm";
-                coap.put(serverIp, SERVER_PORT, "alert", payload.c_str());
-                lastProxAlertTime = currentTime;
-            }
+            // Cooldown check is REMOVED.
+            // This will now send an alert to the server every 250ms.
+            String payload = "PROXIMITY_DETECTED: " + String(distance) + " cm";
+            coap.put(serverIp, SERVER_PORT, "alert", payload.c_str());
         }
         else
         {

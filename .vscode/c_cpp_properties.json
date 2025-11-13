@@ -487,9 +487,9 @@
             "defines": [
                 "PLATFORMIO=60118",
                 "ARDUINO_ESP32_DEV",
-                "WIFI_SSID=\"Airtel_jimi_2244\"",
-                "WIFI_PASS=\"air80447\"",
-                "SERVER_IP=\"192.168.1.7\"",
+                "WIFI_SSID=\"Jimit Chavda\"",
+                "WIFI_PASS=\"heilschindler\"",
+                "SERVER_IP=\"10.133.103.131\"",
                 "HAVE_CONFIG_H",
                 "MBEDTLS_CONFIG_FILE=\"mbedtls/esp_config.h\"",
                 "UNITY_INCLUDE_CONFIG_H",
