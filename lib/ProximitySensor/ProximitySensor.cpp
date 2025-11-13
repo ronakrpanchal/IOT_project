@@ -22,7 +22,7 @@ int ProximitySensor::getDistance()
     digitalWrite(_trigPin, LOW);
 
     // Read the echo time
-    long duration = pulseIn(_echoPin, HIGH);
+    long duration = pulseIn(_echoPin, HIGH, 500000);
 
     // Calculate distance in cm
     int distance = duration * 0.0343 / 2;
